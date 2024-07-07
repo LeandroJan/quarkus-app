@@ -25,36 +25,28 @@ package org.acme;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
+import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+// import jakarta.ws.rs.core.MediaType;
+// import jakarta.ws.rs.core.Response;
 
-@Path("/kafka")
+@Path("/")
 public class KafkaProducerResource {
 
-     @Inject
+    @Inject
     @Channel("my-topic")
     Emitter<String> emitter;
 
-    @POST
-    @Path("/send")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response sendMessage(MessagePayload payload) {
-        emitter.send(payload.getMessage());
-        return Response.ok().entity("{\"status\":\"Message sent\"}").build();
+    @GET
+    public Uni<String> index() {
+        return Uni.createFrom().item("index.html");
     }
 
-    public static class MessagePayload {
-        private String message;
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
+    @POST
+    @Path("/send")
+    public Uni<String> sendMessage(@FormParam("message") String message) {
+        emitter.send(message);
+        return Uni.createFrom().item("Message sent: " + message);
     }
 }
