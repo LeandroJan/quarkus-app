@@ -1,25 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Kafka Producer</title>
-    <script>
-        async function sendMessage() {
-            const message = document.getElementById('message').value;
-            const response = await fetch('/kafka/send', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message: message })
-            });
-            const result = await response.json();
-            alert(result.status);
-        }
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kafka Message Sender</title>
 </head>
 <body>
-    <h1>Send a Message to Kafka</h1>
-    <input type="text" id="message" placeholder="Enter message" />
-    <button onclick="sendMessage()">Send</button>
+    <h1>Send a message to Kafka</h1>
+    <form id="messageForm">
+        <label for="message">Message:</label>
+        <input type="text" id="message" name="message">
+        <button type="submit">Send</button>
+    </form>
+
+    <script>
+        document.getElementById('messageForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const message = document.getElementById('message').value;
+
+            fetch('/kafka', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain'
+                },
+                body: message
+            }).then(response => {
+                if (response.ok) {
+                    alert('Message sent successfully!');
+                } else {
+                    alert('Failed to send message.');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
+
